@@ -11,6 +11,35 @@
 [index09.html](basic/index09.html)<br>
 [index10.html](basic/index10.html)<br>
 
+## Aula do dia 05/09/2018
+
+[01_single_select.html](d3_intro_aula/01_single_select.html)<br>
+[02_multi_select.html](d3_intro_aula/02_multi_select.html)<br>
+[03_iterate_select.html](d3_intro_aula/03_iterate_select.html)<br>
+[04_data_array_start.html](d3_intro_aula/04_data_array_start.html)<br>
+[05_data_object_start.html](d3_intro_aula/05_data_object_start.html)<br>
+[06_util_array.html](d3_intro_aula/06_util_array.html)<br>
+[07_load_data.html](d3_intro_aula/07_load_data.html)<br>
+[08_sort_data.html](d3_intro_aula/08_sort_data.html)<br>
+[data_array_solution.html](d3_intro_aula/data_array_solution.html)<br>
+[data_object_solution.html](d3_intro_aula/data_object_solution.html)<br>
+[movies_d3.html](d3_intro_aula/movies_d3.html)<br>
+
+## Aula do dia 05/09/2018 - Tarefa
+
+[movies_d3.html](d3_intro/movies_d3.html)<br>
+
+## Aula do dia 12/09/2018
+
+[01_scatterplot.html](d3_scale_aula/01_scatterplot.html)<br>
+[02_margin_scatterplot.html](d3_scale_aula/02_margin_scatterplot.html)<br>
+[02_margin_scatterplot_2.html](d3_scale_aula/02_margin_scatterplot_2.html)<br>
+[movies_scatter.html](d3_scale_aula/movies_scatter.html)<br>
+
+## Aula do dia 12/09/2018 - Tarefa
+
+[movies_scatter.html](d3_scale/movies_scatter.html)<br>
+
 ---
 
 Para saber mais sobre a sintaxe markdown, veja [este guia](https://guides.github.com/features/mastering-markdown/).
