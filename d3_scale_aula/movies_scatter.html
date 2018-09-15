@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Scatterplot</title>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+</head>
+
+<body>
+<div id="chart"></div>
+<div id="respostas"></div>
+<script type="text/javascript">
+	
+	function render(dataset) {
+		// Primeiro definimos o objeto margin
+	    let margin = {top: 100, right: 100, bottom: 100, left: 100};
+	    
+	    // Depois definimos w e h como as dimensões internas
+	    // da área do gráfico (área útil)
+	    let w = 1200 - margin.left - margin.right;
+	    let h = 600 - margin.top - margin.bottom;
+
+	    // Depois um elemento g no svg que vai transladar a origem 
+	    // do gráfico como sendo a origem da área útil do gráfico
+
+	    let svg = d3.select("#chart")
+	            .append("svg")
+	                .attr("width", w + margin.left + margin.right)
+	                .attr("height", h + margin.top + margin.bottom)
+	            .append("g")
+	                .attr("transform", "translate(" + margin.left + "," + margin.top + ")"); 
+
+	    // Agora todo o código pode ignorar as margens. 
+	    // Copie aqui o código de criação das escalas do arquivo
+	    // anterior (vai continuar o mesmo)
+	    let xScale = d3.scaleLinear()
+	                    .domain([0, d3.max(dataset, function(d) {
+	                        return d.Worldwide_Gross_M;
+	                    })])
+	                    .range([0,w]);
+
+	    let yScale = d3.scaleLinear()
+	                    .domain([0, d3.max(dataset, function(d) {
+	                        return d.Budget_M;
+	                    })])
+	                    .range([h,0]);
+
+	    let xAxis = d3.axisBottom()
+	                    .scale(xScale)
+	                    .ticks(10);
+
+	    let yAxis = d3.axisLeft()
+	                    .scale(yScale);
+
+	    // Depois adicione os elementos círculos
+	    svg.selectAll("circle")
+	    .data(dataset)
+	    .enter()
+	    .append("circle")
+	    .attr("cx", function(d) {
+	        return xScale(d.Worldwide_Gross_M);
+	    })
+	    .attr("cy", function(d) {
+	        return yScale(d.Budget_M);
+	    })
+	    .attr("r", 5);
+
+	    // Depois adicione os labels
+	    svg.selectAll("text")
+	    .data(dataset)
+	    .enter()
+	    .append("text")
+	    .attr("x", function(d){
+	        return xScale(d.Worldwide_Gross_M);
+	    })
+	    .attr("y", function(d){
+	        return yScale(d.Budget_M);
+	    })
+	    .attr("font-family", "sans-serif")
+	    .attr("font-size", "11px")
+	    .attr("fill", "red")
+	    .text(function(d) {
+	    	return d.Worldwide_Gross_M + ',' + d.Budget_M + (d.Worldwide_Gross_M > 2000 ? (' - ' + d.Film) : '');
+	    });
+
+	    svg.append("g")
+	            .attr("transform", "translate(0," + h + ")")
+	            .call(xAxis);
+	    svg.append("g")
+	            .attr("transform", "translate(0,0)")
+	            .call(yAxis);
+
+	    // Título eixo horizontal
+	    svg.append("text")
+	            .attr("transform", "translate(" + (w/2) + "," + (h + margin.bottom) + ")")
+	            .style("text-anchor", "middle")
+	            .attr("font-family", "sans-serif")
+	            .attr("font-size", "12px")
+	            .text("Bilheteria");
+
+	    // Título eixo horizontal
+	    svg.append("text")
+	            .attr("transform", "rotate(-90)")
+	            .attr("y", 0 - margin.left/2)
+	            .attr("x", 0 - (h/2))
+	            .style("text-anchor", "middle")
+	            .attr("font-family", "sans-serif")
+	            .attr("font-size", "12px")
+	            .text("Orçamento");
+	}
+
+	d3.json("data/movies.json").then(function(json) {
+		render(json);
+	});
+
+	d3.select("#respostas").append("h2").text("Existe alguma correlação entre essas variáveis?");
+	d3.select("#respostas").append("h3").text("Não foi identificada nenhuma relação entre Bilheteria e Orçamento, uma vez há filmes com orçamentos bem próximos, porém com bilheterias bem discrepantes para mais ou para menos. Porém todos os filmes tiveram bilheteria acima do orçamento.");
+
+	d3.select("#respostas").append("h2").text("Existem outliers? Quais são?");
+	d3.select("#respostas").append("h3").text("De forma generalizada, todos filmes encontram-se dentro dos limites de [50-300] em orçamento e [600-1400] em bilheteria, mesmo que não tenha sido identificada uma relacão Orçamento/Bilheteria. Porém existe um caso fora dessa área, que é o filme AVATAR, que teve 237 como orçamento e uma bilheteria de 2784.");
+
+</script>
+</body>
+</html>
