@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Vinculando um vetor de objetos</title>
+    <link rel="stylesheet" href="css/styles.css">
+   <script src="https://d3js.org/d3.v5.min.js"></script>
+</head>
+
+<body>
+
+<script type="text/javascript">
+    function render(data, comparator, container, color, functionData, functionValue, functionDetail) {
+
+        d3.select("body")
+        	.select("div#" + container)
+        	.selectAll("div.h-bar")
+            .data(functionData(data))
+            .enter()
+                .append("div")
+                    .attr("class", "h-bar")
+                    .style("width", functionValue)
+                    .style("background-color", color)
+                .append("span").text(functionDetail);
+	if(comparator)
+            d3.select("body")
+        		.select("div#" + container)
+                .selectAll("div.h-bar") 
+                .sort(comparator);
+    }
+
+    function criarGrafico(data, comparator, container, titulo, color, functionData, functionValue, functionDetail) {
+    	//Adicionar Título
+    	d3.select("body")
+    		.append("div")
+        	.attr('id', container)
+        	.append("p").text(titulo);
+
+    	//Renderizar Gráfico
+    	render(data, comparator, container, color, functionData, functionValue, functionDetail);
+    }
+
+    //Comparadores
+
+    let compareFilmePorBilheteria = function (a, b) { 
+        return b.Worldwide_Gross_M - a.Worldwide_Gross_M;
+    };
+
+    let compareFilmePorOrçamento = function (a, b) { 
+        return b.Budget_M - a.Budget_M;
+    };
+
+    let compareFilmePorLucro = function (a, b) { 
+        return (b.Worldwide_Gross_M - b.Budget_M) - (a.Worldwide_Gross_M - a.Budget_M);
+    };
+
+    let compareCategoriaPorBilheteria = function (a, b) { 
+        return b.value - a.value;
+    };
+
+    //Renderização do gráficos
+    
+    d3.json("data/movies.json").then(function(json){ 
+            criarGrafico(json, compareFilmePorBilheteria, 'divBilheteria', 'Filmes por Bilheteria', 'red', 
+            		function(data) {
+            			return data;
+            		},
+            		function(d) {
+                        return (d.Worldwide_Gross_M / 3) + "px";
+                    }, function(d) {
+                        return d.Film;
+                    });
+
+            criarGrafico(json, compareFilmePorOrçamento, 'divOrcamento', 'Filmes por Orçamento', 'blue', 
+            		function(data) {
+            			return data;
+            		},
+            		function(d) {
+                        return d.Budget_M + "px";
+                    }, function(d) {
+                        return d.Film;
+                    });
+
+            criarGrafico(json, compareFilmePorLucro, 'divLucro', 'Filmes por Lucro', 'green', 
+            		function(data) {
+            			return data;
+            		},
+            		function(d) {
+                        return ((d.Worldwide_Gross_M - d.Budget_M) / 3) + "px";
+                    }, function(d) {
+                        return d.Film;
+                    });
+
+            criarGrafico(json, compareCategoriaPorBilheteria, 'divCategoriaBilheteria', 'Categorias por Bilheteria', 'orange', 
+            		function(data) {
+                        var total = d3.nest()
+									  .key(function(d) { return d.Genre; })
+									  .rollup(function(v) { return d3.sum(v, function(d) { return d.Worldwide_Gross_M; })})
+									  .entries(data);
+						return total;
+                    },function(d) {
+                        return (d.value / 10) + "px";
+                    }, function(d) {
+                        return d.key;
+                    });
+        });
+</script>
+
+</body>
+</html>
