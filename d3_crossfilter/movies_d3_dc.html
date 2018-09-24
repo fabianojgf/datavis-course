@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Scatterplot</title>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+</head>
+
+<body>
+<div id="chart"></div>
+<div id="respostas"></div>
+<script type="text/javascript">
+	
+	function render(data) {
+		//criando um crossfilter
+        let facts = crossfilter(data);
+
+        let dateDim = facts.dimension(function(d){
+            return d.date.getAno();
+        });
+
+        let bilheteriaAnoGroup = dateDim.group().reduceSum(function(d){
+                return d.Worldwide_Gross_M;
+            });
+	}
+
+	d3.json("data/movies.json").then(function(json) {
+		render(json);
+	});
+
+</script>
+</body>
+</html>
