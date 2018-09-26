@@ -3,25 +3,90 @@
 <head>
     <meta charset="utf-8">
     <title>Scatterplot</title>
+    <link rel="stylesheet" href="css/dc.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/crossfilter.min.js"></script>
     <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="js/dc.min.js"></script>
+
+    <style type="text/css">
+        body {
+            width: 768px;
+        }
+    </style>
 </head>
 
 <body>
-<div id="chart"></div>
-<div id="respostas"></div>
+<div>
+    <p><h1> Total de Bilheteria por Ano</h1></p>
+    <div id="chartByYear"></div>
+    <br/>
+    <p><h1> Total de Bilheteria por Gênero</h1></p>
+    <div id="chartByGenre"></div>
+</div>
+
 <script type="text/javascript">
 	
 	function render(data) {
-		//criando um crossfilter
+        //criando um crossfilter
         let facts = crossfilter(data);
 
-        let dateDim = facts.dimension(function(d){
-            return d.date.getAno();
+        var chartByYear = dc.barChart("#chartByYear");
+        var chartByGenre = dc.barChart("#chartByGenre");
+		
+        let yearDim = facts.dimension(function(d){
+            return d.Year;
+        });
+        let worldwideGrossYearGroup = yearDim.group().reduceSum(function(d){
+            return d.Worldwide_Gross_M;
         });
 
-        let bilheteriaAnoGroup = dateDim.group().reduceSum(function(d){
-                return d.Worldwide_Gross_M;
+        let genreDim = facts.dimension(function(d){
+            return d.Genre;
+        });
+        let worldwideGrossGenreGroup = genreDim.group().reduceSum(function(d){
+            return d.Worldwide_Gross_M;
+        });
+
+        chartByYear
+            .width(768)
+            .height(480)
+            .margins({left: 50, right: 50, top: 50, bottom: 50})
+            .brushOn(false)
+            .yAxisLabel("Bilheteria")
+            .xAxisLabel('Ano')
+            .dimension(yearDim)
+            .group(worldwideGrossYearGroup)
+            .elasticY(true)
+            .x(d3.scaleBand())
+            .xUnits(dc.units.ordinal)
+            .on('renderlet', function(chart) {
+                chart.selectAll('rect').on("click", function(d) {
+                    console.log("click!", d);
+                });
             });
+
+        chartByYear.render();
+
+        chartByGenre
+            .width(768)
+            .height(480)
+            .margins({left: 50, right: 50, top: 50, bottom: 50})
+            .brushOn(false)
+            .yAxisLabel("Bilheteria")
+            .xAxisLabel('Gênero')
+            .dimension(genreDim)
+            .group(worldwideGrossGenreGroup)
+            .elasticY(true)
+            .x(d3.scaleBand())
+            .xUnits(dc.units.ordinal)
+            .on('renderlet', function(chart) {
+                chart.selectAll('rect').on("click", function(d) {
+                    console.log("click!", d);
+                });
+            });
+
+        chartByGenre.render();
 	}
 
 	d3.json("data/movies.json").then(function(json) {
