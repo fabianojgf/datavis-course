@@ -108,7 +108,7 @@
 		  	.columns(['dtg','magnitude','depth','latitude','longitude'])
 		  	.sortBy(function (d) { return d.dtg; })
 			.order(d3.ascending);
-			
+
 	  //Create a group for the hour dimension that just counts the number of elements per hour
 
 	  // Setup the charts
@@ -126,7 +126,7 @@
 			.dimension(magnitudeDim)
 			.group(magnitudeGroup)
 			.x(d3.scaleLinear().domain([0,8]))
-			.gap(65)
+			.gap(52)
 			.brushOn(false);
 	  	
 
@@ -141,7 +141,7 @@
 			.dimension(depthDim)
 			.group(depthGroup)
 			.x(d3.scaleLinear().domain([0,100]))
-			.gap(56)
+			.gap(0)
 			.brushOn(false);
 	 
 	  // Configure Time line graph
@@ -156,9 +156,6 @@
 			.group(timeGroup)
 			.x(d3.scaleTime().domain(d3.extent(data, function(d) { return d.dtg; })))
 			.brushOn(false);
-
-	  // Render the Charts
-	  dc.renderAll();
 
 	  // Render the Charts
 	  dc.renderAll();
