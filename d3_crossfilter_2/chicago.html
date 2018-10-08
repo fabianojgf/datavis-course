@@ -73,42 +73,41 @@
 		data.forEach(function(d){
 			d.Longitude = +d.Longitude;
 			d.Latitude = +d.Latitude;
-		    	d['Primary Type'] = d['Primary Type'];
-		    	d.formatedDate = dateFormatter(dateParser(d.Date.substr(0,10)));
+		    d.type = d['Primary Type'];
+		    d.formatedDate = dateParser(d.Date.substr(0,10));
 
-		    	let circle = L.circle([d.Latitude, d.Longitude], 200, {
-								color: colorScale(d['Primary Type']),
-								weight: 2,
-								fillColor: fillColorScale(d['Primary Type']),
-								fillOpacity: 0.5
-								}).addTo(map);
+	    	let circle = L.circle([d.Latitude, d.Longitude], 200, {
+							color: colorScale(d['Primary Type']),
+							weight: 2,
+							fillColor: fillColorScale(d['Primary Type']),
+							fillOpacity: 0.5
+							}).addTo(map);
 
-		    circle.bindPopup("Type: " + d['Primary Type'] + "<br>Date: " + d.formatedDate);
+		    circle.bindPopup("Type: " + d.type + "<br>Date: " + d.formatedDate);
 		});
 
 		// Run the data through crossfilter and load our 'facts'
+
 		let facts = crossfilter(data);
 
-		//Crimes por dia
-		let dateDim = facts.dimension(function(d){
-			return d.formatedDate;
-		});
-
-		let typeCrimeDateGroup = dateDim.group().reduceCount(function(d){
-			return d['Primary Type'];
-		});
-
-		let xScale = d3.scaleTime()
-                           	.domain([dateDim.bottom(1)[0].formatedDate, dateDim.top(1)[0].formatedDate]);
-
 		//total de Crimes por tipo
+
 		let crimeDim = facts.dimension(function(d){
-			return d['Primary Type'];
+			return d.type;
 		});
 
 		let typeCrimeGroup = crimeDim.group();
 
+		//Crimes por dia
+
+		let dateCrimeDim = facts.dimension(function(d){
+			return [d.type, d.formatedDate];
+		});
+
+		let crimeDateGroup = dateCrimeDim.group().reduceCount();
+
 		//Gráfico de Barros de Total de Crimes por Tipo
+
 		crimesBarChart
 			.width(600)
 			.height(300)
@@ -116,44 +115,38 @@
 			.dimension(crimeDim)
 			.group(typeCrimeGroup)
 			.x(d3.scaleBand())
-          		.xUnits(dc.units.ordinal)
-          		.xAxisLabel('Crime')
-          		.yAxisLabel('Total')
+          	.xUnits(dc.units.ordinal)
+          	.xAxisLabel('Crime')
+          	.yAxisLabel('Total')
+          	.colorAccessor(function(d){ return d.key;})
+          	.colors(colorScale)
 			.brushOn(false);
 		
 		//Gráfico de Linhas de Crimes por Dia
-		
-		crimesLineChart
-			.width(600)
-			.height(300)
-			.margins({top: 50, right: 50, bottom: 30, left: 40})
-			.dimension(dateDim)
-			.group(typeCrimeDateGroup)
-			.x(xScale)
-                	.xUnits(d3.timeDays)
-			.xAxisLabel('Data')
-			.yAxisLabel("Número de Crimes")
-                	.renderHorizontalGridLines(true)
-			.brushOn(false);
 
 		crimesLineChart
 			.width(600)
 			.height(300)
 			.margins({top: 50, right: 50, bottom: 30, left: 40})
-			.chart(function(c) { return dc.lineChart(c).curve(d3.curveCardinal); })
-			.x(xScale)
-			.brushOn(false)
+			.dimension(dateCrimeDim)
+			.group(crimeDateGroup)
+			.x(d3.scaleTime().domain(d3.extent(data, function(d) { return d.formatedDate; })))
 			.xAxisLabel('Data')
-			.yAxisLabel("Número de Crimes")
-			.clipPadding(10)
-			.elasticY(true)
-			.dimension(dateDim)
-			.group(typeCrimeDateGroup)
-			.mouseZoomable(true)
-			.seriesAccessor(function(d) {return "Expt: " + d['Primary Type'];})
-			.keyAccessor(function(d) {return 10;})
-			.valueAccessor(function(d) {return 10;})
-			.legend(dc.legend().x(350).y(350).itemHeight(13).gap(5).horizontal(1).legendWidth(140).itemWidth(70));
+		 	.yAxisLabel("Número de Crimes")
+			.seriesAccessor(function(d) { return d.key[0];})
+    		.keyAccessor(function(d) { return +d.key[1]; })
+    		.valueAccessor(function(d) { return +d.value; })
+    		.colorAccessor(function(d){ return d.key; })
+    		.colors(colorScale)
+    		.legend(dc
+    				.legend()
+    				.x(600)
+    				.y(0)
+    				.itemHeight(13)
+    				.gap(5)
+    				.horizontal(1)
+    				.legendWidth(340)
+    				.itemWidth(80));
 
 		dc.renderAll();
 
