@@ -27,3 +27,8 @@ h2 span {
     width: 650px;
     height: 450px;
 }
+
+#crime-map {
+    width: 900px;
+    height: 900px;
+}
