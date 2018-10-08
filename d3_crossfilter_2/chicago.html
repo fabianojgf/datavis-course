@@ -83,7 +83,7 @@
 							fillOpacity: 0.5
 							}).addTo(map);
 
-		    circle.bindPopup("Type: " + d.type + "<br>Date: " + d.formatedDate);
+		    circle.bindPopup("Type: " + d.type + "<br>Date: " + dateFormatter(d.formatedDate));
 		});
 
 		// Run the data through crossfilter and load our 'facts'
