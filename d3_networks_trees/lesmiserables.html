@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title> Similar Songs Network</title>
+    <title> Les Miserables </title>
     
     <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
@@ -14,8 +14,8 @@
   <body>
     <main role="main" class="container">
       <header>
-      <h1>Similar Song Network</h1>
-      <p>Songs similar to one another according to <a href="http://www.last.fm/api">last.fm</a> are linked together. Song nodes are sized based on playcounts, and colored by artist.</p>
+      <h1>Les Miserables</h1>
+      <p>Character interactions.</p>
       </header>
       <div id="main" role="main">
 	<div id="topvis"></div>
@@ -42,21 +42,11 @@
           .attr("viewBox", [-width / 2, -height / 2, width, height]);
 
       // Read the contents of data/songs.json file and process it as a graph variable
-      d3.json("data/songs.json").then(function(graph) {
+      d3.json("data/lesmiserables.json").then(function(graph) {
 
         // Set the nodes and links
         const nodes = graph.nodes;
         const links = graph.links;
-
-	//Find root node
-	const root_value = d3.max(nodes, function(d) { return d.playcount; });
-	const root = nodes.filter(d => d.playcount >= root_value);
-
-	d3.select("#topvis")
-          .append("p").append("b").text("Tree root: ");
-
-	d3.select("#topvis")
-          .append("p").text(root[0].artist + " - " + root[0].name);
 
         // create simulation constant using the forceSimulation function defined down below
         const simulation = forceSimulation(nodes, links).on("tick", ticked);
@@ -67,10 +57,15 @@
                         .data(links)
                         .enter()
                         .append("line")
-                        .attr("class", "link");
+                        .attr("class", "link")
+			.attr("r", function(d) { return d; });
 
-        const countExtent = d3.extent(nodes, function(d){
-          return d.playcount;
+	function countInterations(da) {
+		return links.filter(li => (li.source == da || li.target == da)).length;
+	}
+
+	const countExtent = d3.extent(nodes, function(d){
+		return countInterations(d);
         });
         
         let circleRadius = d3.scaleSqrt()
@@ -84,12 +79,12 @@
                         .enter()
                         .append("circle")
                         .attr("class", "node")
-                        .attr("r", function(d) { return circleRadius(d.playcount); })
+                        .attr("r", function(d) { return circleRadius(countInterations(d)); })
                         .call(drag(simulation));
 
         node.append("title")
             .text(function (d) {
-              return d.artist + " - " + d.name;
+              return d.id + " - Interations: " + countInterations(d);
             });
 
         // define function ticked
