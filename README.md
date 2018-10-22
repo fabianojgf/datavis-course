@@ -70,6 +70,11 @@
 [songs.html](d3_networks_trees/songs.html)<br>
 [lesmiserables.html](d3_networks_trees/lesmiserables.html)<br>
 
+## Aula do dia 22/10/2018 - Tarefa
+
+[usa.html](d3_color/usa.html)<br>
+[crimes.html](d3_color/crimes.html)<br>
+
 ---
 
 Para saber mais sobre a sintaxe markdown, veja [este guia](https://guides.github.com/features/mastering-markdown/).
